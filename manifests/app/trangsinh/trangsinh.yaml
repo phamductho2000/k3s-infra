@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trangsinh
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trangsinh-config
+  namespace: trangsinh
+data:
+  # Config KHONG nhay cam (doc luc chay). Them bien server-side khac vao day.
+  NODE_ENV: "production"
+---
+# Secret chua mat khau DB, API key... KHONG de trong file nay.
+# Tao tay tren server, vi du:
+#   kubectl create secret generic trangsinh-secret -n trangsinh \
+#     --from-literal=DATABASE_URL='postgresql://user:pass@10.0.0.x:5432/trangsinh'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trangsinh
+  namespace: trangsinh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trangsinh
+  template:
+    metadata:
+      labels:
+        app: trangsinh
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: trangsinh
+          image: ghcr.io/phamductho2000/trangsinh:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: trangsinh-config
+            - secretRef:
+                name: trangsinh-secret
+                optional: true
+          resources:
+            requests: { cpu: 100m, memory: 192Mi }
+            limits: { memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trangsinh
+  namespace: trangsinh
+spec:
+  type: NodePort
+  selector:
+    app: trangsinh
+  ports:
+    - port: 80
+      targetPort: 3000
+      nodePort: 30082
