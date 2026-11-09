@@ -33,7 +33,7 @@ spec:
           image: ghcr.io/phamductho2000/genway:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: genway-config
