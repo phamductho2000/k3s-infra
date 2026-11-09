@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ops-console
+  namespace: tho2kdev
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: ops-console.tho2kdev.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ops-console
+                port:
+                  number: 80
+    - host: www.ops-console.tho2kdev.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ops-console
+                port:
+                  number: 80
