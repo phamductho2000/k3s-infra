@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tho2kdev.com
+  name: tho2kdev
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: genway-config
-  namespace: tho2kdev.com
+  namespace: tho2kdev
 data:
   NODE_ENV: "production"
 ---
@@ -15,7 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: genway-deployment
-  namespace: tho2kdev.com
+  namespace: tho2kdev
 spec:
   replicas: 1
   selector:
@@ -48,7 +48,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: genway-service
-  namespace: tho2kdev.com
+  namespace: tho2kdev
 spec:
   type: ClusterIP
   selector:
