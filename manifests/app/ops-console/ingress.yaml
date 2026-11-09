@@ -5,6 +5,10 @@ metadata:
   namespace: tho2kdev
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - ops-console.tho2kdev.com
+      secretName: tho2kdev-origin-tls
   rules:
     - host: ops-console.tho2kdev.com
       http:
