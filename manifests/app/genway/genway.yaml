@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tho2kdev.com
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: genway-config
+  namespace: tho2kdev.com
+data:
+  NODE_ENV: "production"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genway-deployment
+  namespace: tho2kdev.com
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genway
+  template:
+    metadata:
+      labels:
+        app: genway
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull
+      containers:
+        - name: genway
+          image: ghcr.io/phamductho2000/genway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: genway-config
+            - secretRef:
+                name: genway-secret
+                optional: true
+          resources:
+            requests: { cpu: 300m, memory: 256Mi }
+            limits: { memory: 512Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: genway-service
+  namespace: tho2kdev.com
+spec:
+  type: ClusterIP
+  selector:
+    app: genway
+  ports:
+    - port: 80
+      targetPort: 8080
