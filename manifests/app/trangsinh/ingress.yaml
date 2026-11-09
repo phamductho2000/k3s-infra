@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trangsinh-ingress
+  namespace: trangsinh
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - trangsinh.vn
+      secretName: trangsinh-origin-tls
+  rules:
+    - host: trangsinh.vn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ops-console-service
+                port:
+                  number: 80
+    - host: www.trangsinh.vn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ops-console-service
+                port:
+                  number: 80
