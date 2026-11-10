@@ -51,3 +51,8 @@ grafana:
   resources:
     requests: { cpu: 50m, memory: 128Mi }
     limits:   { memory: 384Mi }
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki.monitoring.svc:3100
