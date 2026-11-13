@@ -1,0 +1,58 @@
+alertmanager:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+
+# 3. Prometheus: giới hạn dữ liệu + RAM, có lưu trữ
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    retentionSize: 8GB
+    resources:
+      requests: { cpu: 100m, memory: 512Mi }
+      limits:   { memory: 1Gi }
+    # cho phép Prometheus tìm ServiceMonitor ở mọi namespace (genway sau này)
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+# 4. Grafana: lưu dữ liệu + đổi mật khẩu admin
+grafana:
+  admin:
+    existingSecret: grafana-admin-secret
+    userKey: admin-user
+    passwordKey: admin-password
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.tho2kdev.com
+    tls:
+      - secretName: tho2kdev-origin-tls
+        hosts:
+          - grafana.tho2kdev.com
+  persistence:
+    enabled: true
+    storageClassName: local-path
+    size: 2Gi
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits:   { memory: 384Mi }
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki.monitoring.svc:3100

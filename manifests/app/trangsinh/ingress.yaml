@@ -17,7 +17,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ops-console-service
+                name: trangsinh-service
                 port:
                   number: 80
     - host: www.trangsinh.vn
@@ -27,6 +27,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: ops-console-service
+                name: trangsinh-service
                 port:
                   number: 80
